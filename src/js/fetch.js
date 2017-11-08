@@ -29,23 +29,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-if ('function' !== typeof window.fetch) {
-        window.fetch = function fetch(url) {
-                const xhr = new XMLHttpRequest();
+/*jslint browser*/
+/*global window*/
 
-                xhr.open('GET', url);
-                xhr.responseType = 'arraybuffer';
+let fetch;
+if ("function" === typeof window.fetch) {
+    fetch = window.fetch;
+} else {
+    fetch = function (url) {
+        const xhr = new XMLHttpRequest();
 
-                return new Promise(resolve => {
-                        xhr.onload = function onload() {
-                                resolve({
-                                        ok: 200 === xhr.status,
-                                        status: xhr.status,
-                                        statusText: xhr.statusText,
-                                        arrayBuffer() { return xhr.response; },
-                                });
-                        };
-                        xhr.send();
-                });
-        };
+        xhr.open("GET", url);
+        xhr.responseType = "arraybuffer";
+
+        return new Promise(function (resolve) {
+            xhr.onload = () => resolve({
+                ok: 200 === xhr.status,
+                status: xhr.status,
+                statusText: xhr.statusText,
+                arrayBuffer() {
+                    return xhr.response;
+                }
+            });
+            xhr.send();
+        });
+    };
 }
+
+export default fetch;
